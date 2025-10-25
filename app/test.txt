@@ -1,5 +1,9 @@
 test commit 2
+git branch = check which branch your on
 git checkout -b name = creating branch
 git checkout name = going to that branch
 git add . = add everything to stage
 git commit -m "message goes here" = logs your changes
+git pull = pull changes
+git push = push changes
+git merge nameOfBranch = merges nameoOfBranch w branch your on
