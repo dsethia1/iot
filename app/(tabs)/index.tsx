@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TextInput,
-  TouchableOpacity,
-  Image,
-  StatusBar,
-  SafeAreaView,
-  Dimensions,
-} from 'react-native';
 import Icon from '@expo/vector-icons/Feather';
 import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import {
+  Dimensions,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 interface Library {
   id: number;
@@ -140,7 +140,10 @@ export default function HomeScreen() {
                   <View style={styles.nameBadge}>
                     <Text style={styles.nameText}>{library.name}</Text>
                   </View>
-                  <TouchableOpacity style={styles.externalButton} onPress={() => {}}>
+                  <TouchableOpacity
+                    style={styles.externalButton}
+                    onPress={() => router.push(`/library/${library.id}` as any)}
+                  >
                     <Icon name="external-link" size={20} color="#000" />
                   </TouchableOpacity>
                 </View>
