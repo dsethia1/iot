@@ -1,4 +1,5 @@
-how to use git commands!!
+test commit 2
+
 git branch = check which branch your on
 
 --- pull before you create a branch --
@@ -12,3 +13,6 @@ git commit -m "message goes here" = logs your changes
 git push = push changes
 git merge nameOfBranch = merges nameoOfBranch w branch your on
 
+npm install
+npx expo start
+w
