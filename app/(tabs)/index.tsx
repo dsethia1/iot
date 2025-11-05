@@ -1,5 +1,6 @@
 import Icon from '@expo/vector-icons/Feather';
 import { useRouter } from 'expo-router';
+import { useFavorites } from '../providers/favorites';
 import React, { useState } from 'react';
 import {
   Dimensions,
@@ -29,7 +30,7 @@ export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState<string>('Best');
   const [selectedCity, setSelectedCity] = useState<string>('Austin');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [bookmarked, setBookmarked] = useState<Set<number>>(new Set());
+  const { favorites, toggle, has } = useFavorites();
   const router = useRouter();
 
   const tabs = ['Best', 'New', 'Coffee', 'Popular', 'Food', 'Outdoor'];
@@ -54,15 +55,8 @@ export default function HomeScreen() {
   ];
 
   const toggleBookmark = (id: number) => {
-    setBookmarked((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(id)) {
-        newSet.delete(id);
-      } else {
-        newSet.add(id);
-      }
-      return newSet;
-    });
+    const lib = libraries.find((l) => l.id === id);
+    if (lib) toggle(lib);
   };
 
   return (
@@ -123,7 +117,7 @@ export default function HomeScreen() {
 
                 {/* Bookmark button */}
                 <TouchableOpacity onPress={() => toggleBookmark(library.id)} style={styles.bookmarkButton}>
-                  <Icon name="bookmark" size={20} color={bookmarked.has(library.id) ? '#000' : '#666'} />
+                  <Icon name="bookmark" size={20} color={has(library.id) ? '#000' : '#666'} />
                 </TouchableOpacity>
 
                 {/* Pagination dots */}
