@@ -10,6 +10,7 @@ export default function TabLayout() {
   const router = useRouter();
   const colorScheme = useColorScheme();
   const tint = Colors[colorScheme ?? 'light'].tint ?? '#007aff';
+  const tabIconDefault = Colors[colorScheme ?? 'light'].tabIconDefault ?? '#666';
 
   function navigate(path: string) {
     if (Platform.OS === 'ios' || Platform.OS === 'android') {
@@ -26,17 +27,17 @@ export default function TabLayout() {
       </View>
 
       <View style={styles.bottomBarWrapper} pointerEvents="box-none">
-        <View style={[styles.bottomBar, { borderColor: '#00000008' }]}> 
+        <View style={[styles.bottomBar, { borderColor: '#00000008', backgroundColor: Colors[colorScheme ?? 'light'].background }]}> 
           <TouchableOpacity accessibilityRole="button" onPress={() => navigate('/')} style={styles.iconButton}>
-            <MaterialIcons name="home" size={26} color={tint} />
+              <MaterialIcons name="home" size={26} color={tint} />
           </TouchableOpacity>
 
-          <TouchableOpacity accessibilityRole="button" onPress={() => navigate('/explore')} style={styles.iconButton}>
-            <MaterialIcons name="send" size={26} color="#666" />
+          <TouchableOpacity accessibilityRole="button" accessibilityLabel="Favorites" onPress={() => navigate('/explore')} style={styles.iconButton}>
+              <MaterialIcons name="favorite" size={26} color={tabIconDefault} />
           </TouchableOpacity>
 
           <TouchableOpacity accessibilityRole="button" onPress={() => navigate('/settings')} style={styles.iconButton}>
-            <MaterialIcons name="settings" size={26} color="#666" />
+              <MaterialIcons name="settings" size={26} color={tabIconDefault} />
           </TouchableOpacity>
         </View>
       </View>
