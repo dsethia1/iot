@@ -1,41 +1,45 @@
-/**
- * Firebase client init. Replace the firebaseConfig object with your project's values
- * from the Firebase console (Project settings -> SDK setup and configuration).
- *
- * Notes:
- * - This file uses the modular Firebase JS SDK which works in Expo web and many RN setups.
- * - If you run into native build issues on bare React Native, consider using
- *   react-native-firebase which requires native installation.
- */
+// Import the functions you need from the SDKs you need
 import { initializeApp, getApps } from 'firebase/app';
+import { getAnalytics } from 'firebase/analytics';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
 import { getDatabase } from 'firebase/database';
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-// TODO: replace these placeholder values with your Firebase project's config
-export const firebaseConfig = {
-  apiKey: 'YOUR_API_KEY',
-  authDomain: 'YOUR_AUTH_DOMAIN',
-  projectId: 'YOUR_PROJECT_ID',
-  storageBucket: 'YOUR_STORAGE_BUCKET',
-  messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-  appId: 'YOUR_APP_ID',
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyDr8kh8Y38APai7zD1ypa3gANZTNWmnG2A",
+  authDomain: "iot-studyspace.firebaseapp.com",
+  databaseURL: "https://iot-studyspace-default-rtdb.firebaseio.com",
+  projectId: "iot-studyspace",
+  storageBucket: "iot-studyspace.firebasestorage.app",
+  messagingSenderId: "216512044657",
+  appId: "1:216512044657:web:fb65244e9355cbfbf0c5d0",
+  measurementId: "G-FHDT33LXQ1"
 };
 
-if (!getApps().length) {
-  initializeApp(firebaseConfig);
+// Initialize Firebase
+// Initialize app (avoid multiple in hot-reload environments)
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
+let analytics;
+try {
+  analytics = getAnalytics(app);
+} catch (e) {
+  // analytics may fail in some environments (server/Expo web worker); ignore
 }
 
-export const auth = getAuth();
-export const db = getFirestore();
-export const rtdb = getDatabase();
+// Exports expected by other modules
+export const auth = getAuth(app);
+export const db = getFirestore(app);
+export const rtdb = getDatabase(app);
 
-// Enable offline persistence for Firestore on web where available.
+// Enable offline persistence for Firestore where supported (web)
 try {
-  // enableIndexedDbPersistence returns a Promise; ignore failure in constrained environments
   enableIndexedDbPersistence(db).catch(() => {});
 } catch (e) {
-  // ignore on native or unsupported environments
+  // ignore failures on unsupported platforms
 }
 
-export default { auth, db, rtdb };
+export default { app, analytics, auth, db, rtdb };
