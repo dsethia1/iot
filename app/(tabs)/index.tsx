@@ -1,4 +1,5 @@
 import Icon from '@expo/vector-icons/Feather';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
 import { useFavorites } from '../providers/favorites';
 import React, { useState } from 'react';
@@ -117,7 +118,11 @@ export default function HomeScreen() {
 
                 {/* Bookmark button */}
                 <TouchableOpacity onPress={() => toggleBookmark(library.id)} style={styles.bookmarkButton}>
-                  <Icon name="bookmark" size={20} color={has(library.id) ? '#000' : '#666'} />
+                  <MaterialIcons
+                    name={has(library.id) ? 'bookmark' : 'bookmark-border'}
+                    size={20}
+                    color={has(library.id) ? '#000' : '#666'}
+                  />
                 </TouchableOpacity>
 
                 {/* Pagination dots */}
