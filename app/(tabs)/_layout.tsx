@@ -1,13 +1,14 @@
-import React from 'react';
-import { Slot, useRouter } from 'expo-router';
-import { SafeAreaView, View, TouchableOpacity, StyleSheet, Platform } from 'react-native';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import * as Haptics from 'expo-haptics';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import * as Haptics from 'expo-haptics';
+import { Slot, usePathname, useRouter } from 'expo-router';
+import React from 'react';
+import { Platform, SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function TabLayout() {
   const router = useRouter();
+  const pathname = usePathname();
   const colorScheme = useColorScheme();
   const tint = Colors[colorScheme ?? 'light'].tint ?? '#007aff';
   const tabIconDefault = Colors[colorScheme ?? 'light'].tabIconDefault ?? '#666';
@@ -20,6 +21,11 @@ export default function TabLayout() {
   router.push(path as any);
   }
 
+  // Determine active tab based on pathname
+  const isHomeActive = pathname === '/';
+  const isExploreActive = pathname === '/explore';
+  const isSettingsActive = pathname === '/settings';
+
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.content}>
@@ -29,15 +35,15 @@ export default function TabLayout() {
       <View style={styles.bottomBarWrapper} pointerEvents="box-none">
         <View style={[styles.bottomBar, { borderColor: '#00000008', backgroundColor: Colors[colorScheme ?? 'light'].background }]}> 
           <TouchableOpacity accessibilityRole="button" onPress={() => navigate('/')} style={styles.iconButton}>
-              <MaterialIcons name="home" size={26} color={tint} />
+              <MaterialIcons name="home" size={26} color={isHomeActive ? tint : tabIconDefault} />
           </TouchableOpacity>
 
           <TouchableOpacity accessibilityRole="button" accessibilityLabel="Favorites" onPress={() => navigate('/explore')} style={styles.iconButton}>
-              <MaterialIcons name="favorite" size={26} color={tabIconDefault} />
+              <MaterialIcons name="favorite" size={26} color={isExploreActive ? tint : tabIconDefault} />
           </TouchableOpacity>
 
           <TouchableOpacity accessibilityRole="button" onPress={() => navigate('/settings')} style={styles.iconButton}>
-              <MaterialIcons name="settings" size={26} color={tabIconDefault} />
+              <MaterialIcons name="settings" size={26} color={isSettingsActive ? tint : tabIconDefault} />
           </TouchableOpacity>
         </View>
       </View>
