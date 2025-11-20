@@ -23,6 +23,7 @@ export default function TabLayout() {
 
   // Determine active tab based on pathname
   const isHomeActive = pathname === '/';
+  const isFavoritesActive = pathname === '/favorites';
   const isExploreActive = pathname === '/explore';
   const isSettingsActive = pathname === '/settings';
 
@@ -33,17 +34,35 @@ export default function TabLayout() {
       </View>
 
       <View style={styles.bottomBarWrapper} pointerEvents="box-none">
-        <View style={[styles.bottomBar, { borderColor: '#00000008', backgroundColor: Colors[colorScheme ?? 'light'].background }]}> 
+        <View style={[styles.bottomBar, { borderColor: '#00000020', backgroundColor: colorScheme === 'dark' ? '#07070a' : Colors[colorScheme ?? 'light'].background }]}> 
           <TouchableOpacity accessibilityRole="button" onPress={() => navigate('/')} style={styles.iconButton}>
-              <MaterialIcons name="home" size={26} color={isHomeActive ? tint : tabIconDefault} />
+              <View style={[styles.iconCircle, isHomeActive && styles.iconCircleActive]}>
+                <MaterialIcons name="home" size={20} color={isHomeActive ? '#0b0b0b' : '#FFF'} />
+              </View>
           </TouchableOpacity>
 
-          <TouchableOpacity accessibilityRole="button" accessibilityLabel="Favorites" onPress={() => navigate('/explore')} style={styles.iconButton}>
-              <MaterialIcons name="favorite" size={26} color={isExploreActive ? tint : tabIconDefault} />
+          <TouchableOpacity accessibilityRole="button" accessibilityLabel="Favorites" onPress={() => navigate('/favorites')} style={styles.iconButton}>
+              <View style={[styles.iconCircle, isFavoritesActive && styles.iconCircleActive]}>
+                <MaterialIcons name="bookmark" size={20} color={isFavoritesActive ? '#0b0b0b' : '#bfc3c7'} />
+              </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity accessibilityRole="button" onPress={() => navigate('/')} style={styles.iconButton}>
+              <View style={[styles.iconCircle, /* center always highlighted for location-style action */ pathname.startsWith('/library') && styles.iconCircleActive]}>
+                <MaterialIcons name="location-on" size={20} color={pathname.startsWith('/library') ? '#0b0b0b' : '#FFD43B'} />
+              </View>
           </TouchableOpacity>
 
           <TouchableOpacity accessibilityRole="button" onPress={() => navigate('/settings')} style={styles.iconButton}>
-              <MaterialIcons name="settings" size={26} color={isSettingsActive ? tint : tabIconDefault} />
+              <View style={[styles.iconCircle, isSettingsActive && styles.iconCircleActive]}>
+                <MaterialIcons name="settings" size={20} color={isSettingsActive ? '#0b0b0b' : '#bfc3c7'} />
+              </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity accessibilityRole="button" onPress={() => navigate('/explore')} style={styles.iconButton}>
+              <View style={[styles.iconCircle, isExploreActive && styles.iconCircleActive]}>
+                <MaterialIcons name="search" size={20} color={isExploreActive ? '#0b0b0b' : '#bfc3c7'} />
+              </View>
           </TouchableOpacity>
         </View>
       </View>
@@ -71,7 +90,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 10,
     paddingHorizontal: 18,
-    width: 220,
+    width: 340,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
@@ -79,4 +98,15 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   iconButton: { paddingHorizontal: 8, alignItems: 'center', justifyContent: 'center' },
+  iconCircle: {
+    width: 42,
+    height: 42,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+  },
+  iconCircleActive: {
+    backgroundColor: '#FFD43B',
+  },
 });

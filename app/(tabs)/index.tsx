@@ -1,7 +1,6 @@
 import Icon from '@expo/vector-icons/Feather';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
-import { useFavorites } from '../providers/favorites';
 import React, { useState } from 'react';
 import {
   Dimensions,
@@ -15,6 +14,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useFavorites } from '../providers/favorites';
 
 interface Library {
   id: number;
@@ -28,13 +28,13 @@ interface Library {
 const { width } = Dimensions.get('window');
 
 export default function HomeScreen() {
-  const [activeTab, setActiveTab] = useState<string>('Best');
+  const [activeTab, setActiveTab] = useState<string>('Near you');
   const [selectedCity, setSelectedCity] = useState<string>('Austin');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const { favorites, toggle, has } = useFavorites();
   const router = useRouter();
 
-  const tabs = ['Best', 'New', 'Coffee', 'Popular', 'Food', 'Outdoor'];
+  const tabs = ['Near you', '24 Hours', 'Cafes', 'Libraries', 'High Availability'];
 
   const libraries: Library[] = [
     {
@@ -62,108 +62,79 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle="light-content" />
 
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={styles.listContainer} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <View style={styles.headerTop}>
-            <View>
-              <Text style={styles.locationLabel}>You are here</Text>
-              <View style={styles.cityRow}>
-                <Text style={styles.cityName}>{selectedCity}</Text>
-                <Icon name="chevron-down" size={20} color="#000" />
-              </View>
-            </View>
-            <TouchableOpacity style={styles.shareButton} onPress={() => {}}>
-              <Icon name="share-2" size={20} color="#000" />
+          <View>
+            <Text style={styles.searchingNearText}>Searching near</Text>
+            <TouchableOpacity style={styles.locationButton} onPress={() => {}}>
+              <Text style={styles.locationText}>{selectedCity}</Text>
+              <Icon name="chevron-down" size={18} color="#FFD43B" style={{ marginLeft: 6 }} />
             </TouchableOpacity>
           </View>
 
-          {/* Search Bar */}
-          <View style={styles.searchContainer}>
-            <Icon name="search" size={16} color="#999" style={styles.searchIcon} />
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Enter city"
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              placeholderTextColor="#999"
-            />
-          </View>
+          <TouchableOpacity style={styles.shareButton} onPress={() => {}}>
+            <Icon name="share-2" size={20} color="#FFD43B" />
+          </TouchableOpacity>
         </View>
 
-        {/* Tabs */}
-        <View style={styles.tabsContainer}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabsContent}>
-            {tabs.map((tab) => (
-              <TouchableOpacity key={tab} onPress={() => setActiveTab(tab)} style={styles.tab}>
-                <Text style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>{tab}</Text>
-                {activeTab === tab && <View style={styles.tabIndicator} />}
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+        {/* Search Bar */}
+        <View style={styles.searchBar}>
+          <Icon name="search" size={16} color="#DDD" style={{ marginRight: 8 }} />
+          <TextInput
+            placeholder="Search"
+            placeholderTextColor="#999"
+            style={styles.searchInput}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
         </View>
 
-        {/* Cards */}
-        <View style={styles.cardsContainer}>
-          {libraries.map((library, index) => (
-            <View key={library.id} style={styles.card}>
-              {/* Image Section */}
-              <View style={styles.imageContainer}>
-                <Image source={{ uri: library.image }} style={styles.cardImage} resizeMode="cover" />
+        {/* Category Tabs */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabsContainer} contentContainerStyle={{ paddingRight: 24 }}>
+          {tabs.map((tab) => (
+            <TouchableOpacity key={tab} onPress={() => setActiveTab(tab)}>
+              <Text style={[styles.tab, activeTab === tab && styles.activeTab]}>{tab}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
 
-                {/* Avatar placeholder */}
-                <View style={styles.avatar} />
+        {/* Cards list */}
+        {libraries.map((library) => (
+          <TouchableOpacity key={library.id} style={styles.card} onPress={() => router.push(`/library/${library.id}` as any)}>
+            <Image source={{ uri: library.image }} style={styles.cardImage} resizeMode="cover" />
 
-                {/* Bookmark button */}
-                <TouchableOpacity onPress={() => toggleBookmark(library.id)} style={styles.bookmarkButton}>
-                  <MaterialIcons
-                    name={has(library.id) ? 'bookmark' : 'bookmark-border'}
-                    size={20}
-                    color={has(library.id) ? '#000' : '#666'}
-                  />
-                </TouchableOpacity>
+            {/* 24-hour badge */}
+            <View style={styles.badge24Hour}>
+              <Text style={styles.badgeText}>24 Hours</Text>
+            </View>
 
-                {/* Pagination dots */}
-                <View style={styles.paginationDots}>
-                  <View style={[styles.dot, index === 0 && styles.dotActive]} />
-                  <View style={[styles.dot, index === 1 && styles.dotActive]} />
-                  <View style={styles.dot} />
-                </View>
-              </View>
+            {/* saved / favorite icon */}
+            <TouchableOpacity
+              accessibilityLabel={has(library.id) ? 'Remove from favorites' : 'Add to favorites'}
+              accessibilityRole="button"
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              onPress={() => toggleBookmark(library.id)}
+              style={[styles.savedIcon, has(library.id) && styles.savedIconActive]}
+            >
+              <MaterialIcons name={has(library.id) ? 'bookmark' : 'bookmark-border'} size={18} color={has(library.id) ? '#000' : '#FFD43B'} />
+            </TouchableOpacity>
 
-              {/* Info Section */}
-              <View style={styles.cardInfo}>
-                <View style={styles.cardInfoTop}>
-                  <View style={styles.nameBadge}>
-                    <Text style={styles.nameText}>{library.name}</Text>
-                  </View>
-                  <TouchableOpacity
-                    style={styles.externalButton}
-                    onPress={() => router.push(`/library/${library.id}` as any)}
-                  >
-                    <Icon name="external-link" size={20} color="#000" />
-                  </TouchableOpacity>
-                </View>
-
-                <View style={styles.seatsInfo}>
-                  <Text style={styles.seatsText}>
-                    {library.availableSeats}/{library.totalSeats} Available Seats
-                  </Text>
-                  <Text style={styles.separator}>•</Text>
-                  <Text style={styles.distanceText}>{library.distance}</Text>
-                </View>
+            {/* overlay info */}
+            <View style={styles.overlayBottom}>
+              <Text style={styles.title}>{library.name}</Text>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoText}>{library.availableSeats}/{library.totalSeats} Available</Text>
+                <Text style={styles.infoText}>{library.distance}</Text>
               </View>
             </View>
-          ))}
-        </View>
+          </TouchableOpacity>
+        ))}
 
-        {/* Bottom spacing for layout bar */}
-        <View style={{ height: 140 }} />
+        <View style={{ height: 120 }} />
       </ScrollView>
-
-      {/* Note: bottom navigation is provided by app/(tabs)/_layout.tsx */}
     </SafeAreaView>
   );
 }
@@ -171,192 +142,132 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#1E1E1E',
   },
-  scrollView: {
-    flex: 1,
+  listContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 18,
+    paddingBottom: 40,
   },
   header: {
-    backgroundColor: '#FFF',
-    paddingHorizontal: 24,
-    paddingTop: 16,
-    paddingBottom: 24,
-  },
-  headerTop: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 16,
-  },
-  locationLabel: {
-    fontSize: 12,
-    color: '#999',
-    marginBottom: 4,
-  },
-  cityRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  cityName: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#000',
-  },
-  shareButton: {
-    padding: 8,
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F3F4F6',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    height: 48,
-  },
-  searchIcon: {
-    marginRight: 8,
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 14,
-    color: '#000',
-  },
-  tabsContainer: {
-    backgroundColor: '#FFF',
-    paddingVertical: 16,
-  },
-  tabsContent: {
-    paddingHorizontal: 24,
-    gap: 24,
-  },
-  tab: {
-    paddingBottom: 8,
-  },
-  tabText: {
-    fontSize: 14,
-    color: '#999',
-  },
-  tabTextActive: {
-    color: '#000',
-    fontWeight: '600',
-  },
-  tabIndicator: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 2,
-    backgroundColor: '#000',
-  },
-  cardsContainer: {
-    paddingHorizontal: 24,
-    paddingTop: 16,
-    gap: 16,
-  },
-  card: {
-    backgroundColor: '#FFF',
-    borderRadius: 20,
-    overflow: 'hidden',
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  imageContainer: {
-    height: 240,
-    backgroundColor: '#E5E7EB',
-    position: 'relative',
-  },
-  cardImage: {
-    width: '100%',
-    height: '100%',
-  },
-  avatar: {
-    position: 'absolute',
-    top: 16,
-    left: 16,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#D1D5DB',
-  },
-  bookmarkButton: {
-    position: 'absolute',
-    top: 16,
-    right: 16,
-    width: 40,
-    height: 40,
-    backgroundColor: '#FFF',
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  paginationDots: {
-    position: 'absolute',
-    bottom: 16,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 8,
-  },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#9CA3AF',
-  },
-  dotActive: {
-    backgroundColor: '#1F2937',
-  },
-  cardInfo: {
-    padding: 16,
-  },
-  cardInfoTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 12,
   },
-  nameBadge: {
-    backgroundColor: '#F3F4F6',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    flex: 1,
-    marginRight: 8,
+  searchingNearText: {
+    color: '#A9A9A9',
+    fontSize: 14,
   },
-  nameText: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: '#000',
-  },
-  externalButton: {
-    padding: 8,
-  },
-  seatsInfo: {
+  locationButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    marginTop: 6,
   },
-  seatsText: {
-    fontSize: 13,
+  locationText: {
+    color: '#FFD43B',
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  shareButton: {
+    padding: 8,
+  },
+  searchBar: {
+    flexDirection: 'row',
+    backgroundColor: '#333333',
+    borderRadius: 10,
+    padding: 10,
+    marginTop: 12,
+    marginBottom: 8,
+    alignItems: 'center',
+  },
+  searchInput: {
+    color: '#FFFFFF',
+    flex: 1,
+  },
+  tabsContainer: {
+    paddingLeft: 0,
+    marginVertical: 12,
+  },
+  tab: {
+    color: '#A9A9A9',
+    fontSize: 16,
+    marginRight: 20,
+    paddingBottom: 6,
+  },
+  activeTab: {
+    color: '#FFFFFF',
     fontWeight: 'bold',
+    borderBottomWidth: 2,
+    borderColor: '#FFD43B',
+    paddingBottom: 4,
+  },
+  card: {
+    height: 220,
+    marginBottom: 20,
+    borderRadius: 15,
+    overflow: 'hidden',
+    backgroundColor: '#000',
+  },
+  cardImage: {
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+  },
+  badge24Hour: {
+    position: 'absolute',
+    top: 15,
+    left: 15,
+    backgroundColor: '#FFD43B',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 20,
+  },
+  badgeText: {
     color: '#000',
+    fontWeight: '700',
+    fontSize: 12,
   },
-  separator: {
-    color: '#9CA3AF',
+  savedIconActive: {
+    backgroundColor: '#FFD43B',
   },
-  distanceText: {
-    fontSize: 13,
-    color: '#6B7280',
+  savedIcon: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  overlayBottom: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    padding: 15,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+  },
+  title: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 6,
+    textShadowColor: 'rgba(0, 0, 0, 0.6)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  infoText: {
+    color: '#FFFFFF',
+    fontSize: 14,
   },
 });

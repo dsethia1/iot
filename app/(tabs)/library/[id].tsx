@@ -1,24 +1,17 @@
 import Icon from '@expo/vector-icons/Feather';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { useNavigation } from '@react-navigation/native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
-// Hide the default navigator header so the screen uses its custom in-page header
-export const unstable_settings = {
-  headerShown: false,
-};
-
 import {
-  Dimensions,
-  Image,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Dimensions,
+    Image,
+    Platform,
+    SafeAreaView,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 
 const { width } = Dimensions.get('window');
@@ -27,20 +20,6 @@ export default function LibraryDetailScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const id = params.id as string | undefined;
-
-  // Ensure any navigator header is hidden for this screen. Some navigator setups
-  // may still render a header from a parent navigator; force headerShown:false
-  // via setOptions as a robust fallback.
-  const navigation = useNavigation();
-  React.useLayoutEffect(() => {
-  if (navigation && typeof (navigation as any).setOptions === 'function') {
-      try {
-        (navigation as any).setOptions({ headerShown: false });
-      } catch (e) {
-        // ignore
-      }
-    }
-  }, [navigation]);
 
   // In a real app you'd fetch library data by id; here we keep it simple.
   const title = 'Perry-Castañeda Library (PCL)';
@@ -80,9 +59,7 @@ export default function LibraryDetailScreen() {
             <Text style={styles.chipText}>24h</Text>
           </View>
 
-          <TouchableOpacity style={styles.bookmarkCircle} onPress={() => {}}>
-            <MaterialIcons name="bookmark" size={18} color="#081017" />
-          </TouchableOpacity>
+          {/* bookmark button removed on detail screen to keep UI clean */}
         </View>
 
         <View style={styles.infoCard}>
@@ -112,15 +89,8 @@ export default function LibraryDetailScreen() {
         <View style={{ height: 160 }} />
       </ScrollView>
 
-      <View style={styles.bottomActions}>
-        <View style={styles.bottomInner}>
-          <TouchableOpacity style={styles.bottomIcon}><MaterialIcons name="home" size={20} color="#FFF" /></TouchableOpacity>
-          <TouchableOpacity style={styles.bottomIcon}><MaterialIcons name="bookmark" size={20} color="#FFF" /></TouchableOpacity>
-          <TouchableOpacity style={[styles.bottomIcon, styles.homeActive]}><MaterialIcons name="location-on" size={20} color="#081017" /></TouchableOpacity>
-          <TouchableOpacity style={styles.bottomIcon}><MaterialIcons name="settings" size={20} color="#FFF" /></TouchableOpacity>
-          <TouchableOpacity style={styles.bottomIcon}><MaterialIcons name="search" size={20} color="#FFF" /></TouchableOpacity>
-        </View>
-      </View>
+      {/* The shared bottom tab bar from app/(tabs)/_layout.tsx will be visible here because this screen
+          lives inside the (tabs) group. Remove per-screen bottom actions in favor of the shared bar. */}
     </SafeAreaView>
   );
 }
@@ -149,7 +119,6 @@ const styles = StyleSheet.create({
   headerCenter: { flex: 1, paddingHorizontal: 12 },
   title: { fontSize: 16, fontWeight: '700', color: '#FFD43B' },
   subtitle: { fontSize: 12, color: '#9AA0A6', marginTop: 2 },
-  // closeButton removed
   content: { padding: 20 },
   floorRow: { alignItems: 'center', marginBottom: 12 },
   floorButton: {
@@ -165,7 +134,7 @@ const styles = StyleSheet.create({
   cardImage: { width: '100%', height: width * 0.45, borderRadius: 14 },
   topRightChip: { position: 'absolute', top: 12, right: 12, backgroundColor: '#FFD43B', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 18 },
   chipText: { color: '#081017', fontWeight: '700' },
-  bookmarkCircle: { position: 'absolute', top: 12, left: 12, width: 44, height: 44, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFD43B' },
+  /* bookmarkCircle removed */
   infoCard: { marginTop: 16, backgroundColor: '#0b1220', borderRadius: 16, padding: 16 },
   infoTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   infoLeft: { flex: 1 },
@@ -179,8 +148,4 @@ const styles = StyleSheet.create({
   amenitiesRow: { flexDirection: 'row', gap: 8, marginTop: 12 },
   amenity: { backgroundColor: 'rgba(255,255,255,0.03)', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 12 },
   amenityText: { color: '#9AA0A6', fontWeight: '600' },
-  bottomActions: { position: 'absolute', left: 0, right: 0, bottom: 18, alignItems: 'center' },
-  bottomInner: { width: 260, flexDirection: 'row', justifyContent: 'space-between', backgroundColor: '#0b1220', paddingVertical: 10, paddingHorizontal: 14, borderRadius: 999, shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.4, shadowRadius: 12, elevation: 8 },
-  bottomIcon: { width: 44, height: 44, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent' },
-  homeActive: { backgroundColor: '#FFD43B' },
 });
