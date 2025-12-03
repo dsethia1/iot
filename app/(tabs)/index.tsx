@@ -1,6 +1,7 @@
 import Icon from '@expo/vector-icons/Feather';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
+import { useFavorites } from '../providers/favorites';
 import React, { useState } from 'react';
 import {
   Dimensions,
@@ -14,7 +15,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useFavorites } from '../providers/favorites';
 
 interface Library {
   id: number;
@@ -103,7 +103,7 @@ export default function HomeScreen() {
 
         {/* Cards list */}
         {libraries.map((library) => (
-          <TouchableOpacity key={library.id} style={styles.card} onPress={() => router.push(`/library/${library.id}` as any)}>
+          <TouchableOpacity key={library.id} style={styles.card} onPress={() => router.push(`/library/${library.id}/floors` as any)}>
             <Image source={{ uri: library.image }} style={styles.cardImage} resizeMode="cover" />
 
             {/* 24-hour badge */}

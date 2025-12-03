@@ -1,5 +1,5 @@
 import React from 'react';
-import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { View, Text, StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
 
 function getOverlayColorByRatio(available: number, total: number) {
   if (!total) return 'rgba(0,0,0,0.4)';
