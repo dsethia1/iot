@@ -1,7 +1,9 @@
-import React from 'react';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { SafeAreaView, StatusBar, View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { onValue, ref } from "firebase/database";
+import React, { useEffect, useState } from 'react';
+import { SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { rtdb } from "../../../../../firebase";
 
 type Seat = { id: string; status: 'available' | 'occupied' | 'reserved'; label?: string };
 
@@ -19,6 +21,45 @@ export default function SectionScreen() {
   const router = useRouter();
   const id = params.id as string | undefined;
   const section = params.section as string | undefined;
+
+  const [sensorData, setSensorData] = useState<any>(null);
+
+  useEffect(() => {
+    console.log("LIVE SENSOR DATA:", sensorData);
+    const dbRef = ref(rtdb, "esp32/data");
+
+    const unsub = onValue(dbRef, snap => {
+      const val = snap.val();
+      if (!val) return;
+
+      const keys = Object.keys(val);
+      const latest = val[keys[keys.length - 1]];
+      setSensorData(latest);
+    });
+
+    return () => unsub();
+  }, [sensorData]);
+
+  function getSeatStatus(sd: any) {
+  if (!sd) {
+    return ["available", "available", "available", "available"];
+  }
+
+  return [
+    sd.F && sd.L ? "occupied" : "available", // Chair 1
+    sd.F && sd.R ? "occupied" : "available", // Chair 2
+    sd.B && sd.L ? "occupied" : "available", // Chair 3
+    sd.B && sd.R ? "occupied" : "available"  // Chair 4
+  ];
+}
+
+let seatStatuses = getSeatStatus(sensorData);
+
+// FORCE table 1 to stay yellow when no real data exists
+if (sensorData === null) {
+  seatStatuses = ["available", "available", "available", "available"];
+}
+
 
   // For demo purposes use small sample data per section id
   const sample = {
@@ -57,7 +98,7 @@ export default function SectionScreen() {
         <View style={styles.gridWrap}>
           <View style={styles.tablesGrid}>
             {[
-              { id: 't1', label: 'Table 1', seats: 4, available: Math.min(2, meta.available) },
+              { id: 't1', label: 'Table 1', statuses: seatStatuses },
               { id: 't2', label: 'Table 2', seats: 4, available: 1 },
               { id: 't3', label: 'Table 3', seats: 4, available: 2 },
               { id: 't4', label: 'Table 4', seats: 4, available: 0 },
@@ -68,23 +109,34 @@ export default function SectionScreen() {
                 <View style={styles.tableSeats}>
                   <View style={styles.seatRow}>
                     {[0, 1].map((i) => {
-                      const isAvailable = i < table.available;
-                      return (
-                        <View key={i} style={[styles.seat, isAvailable ? styles.seatAvailable : styles.seatOccupied]}>
-                          <Text style={styles.seatText}>{i + 1}</Text>
-                        </View>
-                      );
-                    })}
+                      const status = table.id.toLowerCase() === "t1"
+                      ? (table.statuses?.[i] ?? "available")
+                      : (table.available !== undefined && i < table.available ? "available" : "occupied");
+
+                      const isAvailable = status === "available";
+
+                    return (
+                      <View key={i} style={[styles.seat, isAvailable ? styles.seatAvailable : styles.seatOccupied]}>
+                      <Text style={styles.seatText}>{i + 1}</Text>
+                      </View>
+                    );
+                  })}
+
                   </View>
 
                   <View style={styles.tableRect}><Text style={styles.tableRectText}>{table.label}</Text></View>
 
                   <View style={styles.seatRow}>
                     {[2, 3].map((i) => {
-                      const isAvailable = i < table.available;
+                      const status = table.id.toLowerCase() === "t1"
+                      ? (table.statuses?.[i] ?? "available")
+                      : (table.available !== undefined && i < table.available ? "available" : "occupied");
+
+                      const isAvailable = status === "available";
+
                       return (
                         <View key={i} style={[styles.seat, isAvailable ? styles.seatAvailable : styles.seatOccupied]}>
-                          <Text style={styles.seatText}>{i + 1}</Text>
+                        <Text style={styles.seatText}>{i + 1}</Text>
                         </View>
                       );
                     })}
