@@ -7,15 +7,18 @@ ALCOVE is an Expo (React Native) application that connects to a Firebase Realtim
 ## Installation
 
 ### 1) Clone the repository
+```bash
 git clone <https://github.com/dsethia1/iot.git>
 cd iot
+```
 
 ### 2) Install Dependencies
 ```bash
 npm install
 npm install firebase
 npm install -g expo-cli
-
+```
 ### 3) Run Expo
+```bash
 npx expo start
-
+```
