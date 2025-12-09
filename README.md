@@ -22,3 +22,16 @@ npm install -g expo-cli
 ```bash
 npx expo start
 ```
+
+**Link to project demo:** http://recruiters-love-seeing-live-demos.com/
+
+## How It's Made:
+
+## Tech Stack
+
+- **Mobile:** React Native, Expo  
+- **Language:** TypeScript
+- **Hardware:** Arduino ESP32, HC-SR04 Ultrasonic Sensor  
+- **Backend:** Firebase
+- 
+We used React Native with Expo to develop the mobile front end, implementing the UI based on the Figma designs created by our design team. On the hardware side, we used an HC-SR04 ultrasonic sensor connected to an ESP-32 to measure table distance data. These readings were calibrated specifically for the PCL tables and then uploaded to Firebase. The front end reflected to these Firebase updates (via firebase.js) and dynamically adjusted the UI in [section].tsx, updating each table’s color/state in real time based on occupancy.
