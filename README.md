@@ -23,7 +23,7 @@ npm install -g expo-cli
 npx expo start
 ```
 
-**Link to project demo:** http://recruiters-love-seeing-live-demos.com/
+**Link to project demo:** https://drive.google.com/file/d/1q9-GUKTqSUneVAmu8vMDS2dQjQXpfy5W/view?usp=drive_link
 
 ## How It's Made:
 
